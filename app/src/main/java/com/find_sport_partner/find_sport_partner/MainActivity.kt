@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.find_sport_partner.find_sport_partner.databinding.ActivityMainBinding
+import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.search.MapboxSearchSdk
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -19,6 +21,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        MapboxSearchSdk.initialize(
+            this.application,
+            this.getString(R.string.mapbox_access_token),
+            LocationEngineProvider.getBestLocationEngine(this)
+        )
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
