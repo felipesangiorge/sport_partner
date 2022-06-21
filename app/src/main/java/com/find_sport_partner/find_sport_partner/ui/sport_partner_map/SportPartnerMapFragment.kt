@@ -32,7 +32,9 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.OnCircleAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
+import com.mapbox.search.*
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.Executor
 import javax.inject.Inject
 
 
@@ -56,11 +58,17 @@ class SportPartnerMapFragment() : Fragment() {
     @Inject
     lateinit var initialResourceOptions: ResourceOptions
 
+    lateinit var searchEngine: SearchEngine
+
+    var point: Point? = null
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSportPartnerMapBinding.inflate(inflater, container, false)
 
         binding.ivPin.toVisibility = false
+
+        searchEngine = MapboxSearchSdk.getSearchEngine()
 
         locationPermissionRequest.launch(
             arrayOf(
@@ -69,14 +77,41 @@ class SportPartnerMapFragment() : Fragment() {
             )
         )
 
+        val reverseSearchCallback = object : SearchCallback {
+            override fun onError(e: Exception) {
+               Log.e("Ex","$e")
+            }
+
+            override fun onResults(results: List<com.mapbox.search.result.SearchResult>, responseInfo: ResponseInfo) {
+                Log.e("RESS","${results.first()}")
+                if(results.isNotEmpty()){
+                    val address = results.first().address
+                    binding.etMapSearch.setText("${address?.place}, ${address?.locality.orEmpty()} ${address?.district.orEmpty()} , ${address?.country}")
+
+                }
+             }
+        }
+
         binding.mvMap.getMapboxMap().flyTo(initialCameraOptions)
         mapView = binding.mvMap
 
         mapView.camera.addCameraCenterChangeListener {
             binding.ivPin.toVisibility = true
+            point = it
+        }
 
-            binding.btnCreate.setOnClickListener { _ ->
-                viewModel.onCreateMarker(it)
+
+        mapView.getMapboxMap().addOnMapIdleListener {
+            point?.let {
+                binding.btnCreate.setOnClickListener { _ ->
+                    viewModel.onCreateMarker(it)
+                }
+
+                searchEngine.search(
+                    ReverseGeoOptions(
+                        it
+                    ), reverseSearchCallback
+                )
             }
         }
 
@@ -183,7 +218,6 @@ class SportPartnerMapFragment() : Fragment() {
         // Add the resulting circle to the map.
         circleAnnotationManager
             .addClickListener(OnCircleAnnotationClickListener {
-                Log.e("clicked", "${data.title}")
                 mapView.getMapboxMap().flyTo(
                     position
                 )

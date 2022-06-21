@@ -5,17 +5,22 @@ import com.find_sport_partner.find_sport_partner.R
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.ResourceOptions
+import com.mapbox.search.*
+import com.mapbox.search.record.IndexableDataProvider
+import com.mapbox.search.record.IndexableRecord
+import com.mapbox.search.result.SearchResult
+import com.mapbox.search.result.SearchSuggestion
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.Executor
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object MapBoxModule {
-
 
     @Provides
     @Singleton
