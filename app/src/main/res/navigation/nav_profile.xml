@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/carMapFragment"
+    >
+
+    <fragment
+        android:id="@+id/carMapFragment"
+        android:name="com.find_sport_partner.find_sport_partner.ui.sport_partner_map.SportPartnerMapFragment"
+        android:label="@string/car_map_fragment_label"
+        tools:layout="@layout/fragment_sport_partner_map"
+        >
+
+    </fragment>
+
+</navigation>
