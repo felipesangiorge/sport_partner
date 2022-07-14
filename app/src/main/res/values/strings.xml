@@ -2,7 +2,10 @@
     <string name="app_name">sport_partner</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="car_map_fragment_label">Car Map Fragment</string>
+    <string name="map_fragment_label">Map Fragment</string>
+    <string name="games_fragment_label">Games Fragment</string>
+    <string name="profile_fragment_label">Profile Fragment</string>
+    <string name="profile_fragment_settings_label">Settings</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiZmVsaXBlc2FuZ2lvcmdlIiwiYSI6ImNsNGxwOGQ5eTFhYnMzaXBmOWN6bG44ZHIifQ.j5m3H55cpVD0wZW3OF4Rfg</string>
 
 </resources>

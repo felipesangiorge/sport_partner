@@ -17,7 +17,9 @@ import androidx.core.location.LocationRequestCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.find_sport_partner.find_sport_partner.R
 import com.find_sport_partner.find_sport_partner.databinding.FragmentSportPartnerMapBinding
 import com.find_sport_partner.find_sport_partner.domain.SportPartnerMarkerModel
 import com.find_sport_partner.find_sport_partner.extensions.toVisibility
@@ -34,7 +36,8 @@ import com.mapbox.maps.plugin.annotation.generated.OnCircleAnnotationClickListen
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.search.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.concurrent.Executor
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 
@@ -66,6 +69,8 @@ class SportPartnerMapFragment() : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSportPartnerMapBinding.inflate(inflater, container, false)
 
+        Log.e("SCREN1","SCREN1")
+
         binding.ivPin.toVisibility = false
 
         searchEngine = MapboxSearchSdk.getSearchEngine()
@@ -79,17 +84,15 @@ class SportPartnerMapFragment() : Fragment() {
 
         val reverseSearchCallback = object : SearchCallback {
             override fun onError(e: Exception) {
-               Log.e("Ex","$e")
+                Log.e("Ex", "$e")
             }
 
             override fun onResults(results: List<com.mapbox.search.result.SearchResult>, responseInfo: ResponseInfo) {
-                Log.e("RESS","${results.first()}")
-                if(results.isNotEmpty()){
+                if (results.isNotEmpty()) {
                     val address = results.first().address
                     binding.etMapSearch.setText("${address?.place}, ${address?.locality.orEmpty()} ${address?.district.orEmpty()} , ${address?.country}")
-
                 }
-             }
+            }
         }
 
         binding.mvMap.getMapboxMap().flyTo(initialCameraOptions)
@@ -135,7 +138,6 @@ class SportPartnerMapFragment() : Fragment() {
                 )
             }
         }
-
         binding.etMapSearch.addTextChangedListener {
             viewModel.onMapSearchTextChange(it.toString())
         }
@@ -148,32 +150,41 @@ class SportPartnerMapFragment() : Fragment() {
             viewModel.aditionalInformationTextChange(it.toString())
         }
 
-        viewModel.navigation.observe(viewLifecycleOwner, Observer {
-            when (it) {
-                is SportPartnerMapContract.ViewInstructions.CreateMapPointMarker -> {
-                    createMapBoxMarker(it.point, it.data)
+        lifecycleScope.launchWhenStarted {
+
+            viewModel.navigation.collectLatest {
+                when (it) {
+                    is SportPartnerMapContract.ViewInstructions.CreateMapPointMarker -> {
+                        createMapBoxMarker(it.point, it.data)
+                    }
+                    is SportPartnerMapContract.ViewInstructions.NavigateToMapPointMarkerDetail -> {
+                        val bundle = Bundle()
+                        bundle.putParcelable("sportPartnerData", it.data)
+
+                        findNavController().navigate(R.id.action_mapFragment_to_gamesFragment, bundle)
+                    }
+                    else -> {}
                 }
-                else -> {}
             }
-        })
 
-        viewModel.mapSearchText.observe(viewLifecycleOwner, Observer {
-            if (it.orEmpty() != binding.etMapSearch.text.toString()) {
-                binding.etMapSearch.setText(it)
+            viewModel.mapSearchText.collectLatest {
+                if (it.orEmpty() != binding.etMapSearch.text.toString()) {
+                    binding.etMapSearch.setText(it)
+                }
             }
-        })
 
-        viewModel.titleText.observe(viewLifecycleOwner, Observer {
-            if (it.orEmpty() != binding.etTitle.text.toString()) {
-                binding.etTitle.setText(it)
+            viewModel.titleText.collectLatest {
+                if (it.orEmpty() != binding.etTitle.text.toString()) {
+                    binding.etTitle.setText(it)
+                }
             }
-        })
 
-        viewModel.aditionalInformationText.observe(viewLifecycleOwner, Observer {
-            if (it.orEmpty() != binding.etAditionalInfo.text.toString()) {
-                binding.etAditionalInfo.setText(it)
+            viewModel.aditionalInformationText.collectLatest {
+                if (it.orEmpty() != binding.etAditionalInfo.text.toString()) {
+                    binding.etAditionalInfo.setText(it)
+                }
             }
-        })
+        }
 
         return binding.root
     }
@@ -221,6 +232,8 @@ class SportPartnerMapFragment() : Fragment() {
                 mapView.getMapboxMap().flyTo(
                     position
                 )
+
+                viewModel.navigateToSportDetail(data)
 
                 binding.ivPin.toVisibility = false
 

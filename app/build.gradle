@@ -63,19 +63,29 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
 
     //RETROFIT
-    implementation "com.squareup.retrofit2:retrofit:2.9.0"
-    implementation "com.squareup.retrofit2:converter-scalars:2.9.0"
-    implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    def retrofit = "2.9.0"
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
     implementation 'net.danlew:android.joda:2.10.6.1'
 
-    def mapbox = "10.6.0"
+    //IMAGE VIEW
+    def circleImageView = "3.1.0"
+
+    implementation "de.hdodenhof:circleimageview:$circleImageView"
+
     //MAPBOX
+    def mapbox = "10.6.0"
+
     implementation "com.mapbox.maps:android:$mapbox"
     implementation "com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.32"
 
+    //HILT
     def hilt = "2.40.5"
+
     implementation "com.google.dagger:hilt-android:$hilt"
     kapt "com.google.dagger:hilt-android-compiler:$hilt"
 

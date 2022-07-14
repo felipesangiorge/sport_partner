@@ -3,17 +3,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/carMapFragment"
+    android:id="@+id/nav_profile"
+    app:startDestination="@id/profileFragment"
     >
 
     <fragment
-        android:id="@+id/carMapFragment"
-        android:name="com.find_sport_partner.find_sport_partner.ui.sport_partner_map.SportPartnerMapFragment"
-        android:label="@string/car_map_fragment_label"
-        tools:layout="@layout/fragment_sport_partner_map"
+        android:id="@+id/profileFragment"
+        android:name="com.find_sport_partner.find_sport_partner.ui.profile.ProfileFragment"
+        android:label="@string/profile_fragment_label"
+        tools:layout="@layout/fragment_profile"
         >
 
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.find_sport_partner.find_sport_partner.ui.settings.SettingsFragment"
+        android:label="@string/profile_fragment_settings_label"
+        tools:layout="@layout/fragment_settings"/>
 
 </navigation>

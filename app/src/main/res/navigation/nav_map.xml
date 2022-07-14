@@ -3,16 +3,28 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/carMapFragment"
+    android:id="@+id/nav_map"
+    app:startDestination="@id/mapFragment"
     >
 
     <fragment
-        android:id="@+id/carMapFragment"
+        android:id="@+id/mapFragment"
         android:name="com.find_sport_partner.find_sport_partner.ui.sport_partner_map.SportPartnerMapFragment"
-        android:label="@string/car_map_fragment_label"
+        android:label="@string/map_fragment_label"
         tools:layout="@layout/fragment_sport_partner_map"
         >
+
+        <action
+            android:id="@+id/action_mapFragment_to_gamesFragment"
+            app:destination="@id/gamesFragment"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/gamesFragment"
+        android:name="com.find_sport_partner.find_sport_partner.ui.games_detail.GamesDetailFragment"
+        android:label="@string/games_fragment_label"
+        tools:layout="@layout/fragment_games_detail">
 
     </fragment>
 
