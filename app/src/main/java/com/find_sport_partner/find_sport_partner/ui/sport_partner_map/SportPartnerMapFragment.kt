@@ -69,9 +69,61 @@ class SportPartnerMapFragment() : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSportPartnerMapBinding.inflate(inflater, container, false)
 
-        Log.e("SCREN1","SCREN1")
-
         binding.ivPin.toVisibility = false
+
+        binding.etMapSearch.addTextChangedListener {
+            viewModel.onMapSearchTextChange(it.toString())
+        }
+
+        binding.etTitle.addTextChangedListener {
+            viewModel.titleTextChange(it.toString())
+        }
+
+        binding.etAditionalInfo.addTextChangedListener {
+            viewModel.aditionalInformationTextChange(it.toString())
+        }
+
+        lifecycleScope.launchWhenStarted {
+
+            viewModel.navigation.collectLatest {
+                when (it) {
+                    is SportPartnerMapContract.ViewInstructions.CreateMapPointMarker -> {
+                        createMapBoxMarker(it.point, it.data)
+                    }
+                    is SportPartnerMapContract.ViewInstructions.NavigateToMapPointMarkerDetail -> {
+                        val bundle = Bundle()
+                        bundle.putParcelable("sportPartnerData", it.data)
+
+                        findNavController().navigate(R.id.action_mapFragment_to_gamesFragment, bundle)
+                    }
+                    else -> {}
+                }
+            }
+
+            viewModel.mapSearchText.collect() {
+                if (it.orEmpty() != binding.etMapSearch.text.toString()) {
+                    binding.etMapSearch.setText(it)
+                }
+            }
+
+            viewModel.titleText.collect() {
+                if (it.orEmpty() != binding.etTitle.text.toString()) {
+                    binding.etTitle.setText(it)
+                }
+            }
+
+            viewModel.aditionalInformationText.collect() {
+                if (it.orEmpty() != binding.etAditionalInfo.text.toString()) {
+                    binding.etAditionalInfo.setText(it)
+                }
+            }
+        }
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         searchEngine = MapboxSearchSdk.getSearchEngine()
 
@@ -138,55 +190,7 @@ class SportPartnerMapFragment() : Fragment() {
                 )
             }
         }
-        binding.etMapSearch.addTextChangedListener {
-            viewModel.onMapSearchTextChange(it.toString())
-        }
 
-        binding.etTitle.addTextChangedListener {
-            viewModel.titleTextChange(it.toString())
-        }
-
-        binding.etAditionalInfo.addTextChangedListener {
-            viewModel.aditionalInformationTextChange(it.toString())
-        }
-
-        lifecycleScope.launchWhenStarted {
-
-            viewModel.navigation.collectLatest {
-                when (it) {
-                    is SportPartnerMapContract.ViewInstructions.CreateMapPointMarker -> {
-                        createMapBoxMarker(it.point, it.data)
-                    }
-                    is SportPartnerMapContract.ViewInstructions.NavigateToMapPointMarkerDetail -> {
-                        val bundle = Bundle()
-                        bundle.putParcelable("sportPartnerData", it.data)
-
-                        findNavController().navigate(R.id.action_mapFragment_to_gamesFragment, bundle)
-                    }
-                    else -> {}
-                }
-            }
-
-            viewModel.mapSearchText.collectLatest {
-                if (it.orEmpty() != binding.etMapSearch.text.toString()) {
-                    binding.etMapSearch.setText(it)
-                }
-            }
-
-            viewModel.titleText.collectLatest {
-                if (it.orEmpty() != binding.etTitle.text.toString()) {
-                    binding.etTitle.setText(it)
-                }
-            }
-
-            viewModel.aditionalInformationText.collectLatest {
-                if (it.orEmpty() != binding.etAditionalInfo.text.toString()) {
-                    binding.etAditionalInfo.setText(it)
-                }
-            }
-        }
-
-        return binding.root
     }
 
     override fun onStart() {

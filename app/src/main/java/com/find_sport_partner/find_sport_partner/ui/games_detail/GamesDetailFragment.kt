@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.find_sport_partner.find_sport_partner.databinding.FragmentGamesDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class GamesDetailFragment : Fragment() {
@@ -34,8 +35,10 @@ class GamesDetailFragment : Fragment() {
                     GamesDetailContract.ViewInstructions.NavigateBack -> findNavController().navigateUp()
                 }
             }
+        }
 
-            viewModel.sportPartnerData.collect {
+        lifecycleScope.launchWhenCreated {
+            viewModel.sportPartnerData.collectLatest {
                 binding.tvSport.text = it.title
                 binding.tvInfo.text = it.aditionalInfo
                 binding.tvLocation.text = it.address

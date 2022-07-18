@@ -6,6 +6,7 @@ import com.find_sport_partner.find_sport_partner.data.repository.SportPartnerMap
 import com.find_sport_partner.find_sport_partner.domain.SportPartnerMarkerModel
 import com.mapbox.geojson.Point
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,8 +17,8 @@ class SportPartnerMapViewModel @Inject constructor(
     sportPartnerMapRepository: SportPartnerMapRepository_Imp,
 ) : ViewModel(), SportPartnerMapContract.ViewModel {
 
-    private var _navigation = MutableSharedFlow<SportPartnerMapContract.ViewInstructions>()
-    override val navigation: Flow<SportPartnerMapContract.ViewInstructions> = _navigation.asSharedFlow()
+    private var _navigation = Channel<SportPartnerMapContract.ViewInstructions>()
+    override val navigation: Flow<SportPartnerMapContract.ViewInstructions> = _navigation.receiveAsFlow()
 
     private val _mapSearchText = MutableStateFlow<String>("")
     override val mapSearchText: Flow<String> = _mapSearchText
@@ -51,14 +52,14 @@ class SportPartnerMapViewModel @Inject constructor(
         val milis = System.currentTimeMillis()
 
         viewModelScope.launch {
-            _navigation.emit(
+            _navigation.send(
                 SportPartnerMapContract.ViewInstructions.CreateMapPointMarker(
                     point,
                     SportPartnerMarkerModel(
                         milis.toString(),
-                        _titleText.first(),
-                        _aditionalInformationText.first(),
-                        _mapSearchText.first()
+                        _titleText.value,
+                        _aditionalInformationText.value,
+                        _mapSearchText.value
                     )
                 )
             )
@@ -67,7 +68,7 @@ class SportPartnerMapViewModel @Inject constructor(
 
     override fun navigateToSportDetail(data: SportPartnerMarkerModel) {
         viewModelScope.launch {
-            _navigation.emit(
+            _navigation.send(
                 SportPartnerMapContract.ViewInstructions.NavigateToMapPointMarkerDetail(data)
             )
         }

@@ -1,7 +1,6 @@
 package com.find_sport_partner.find_sport_partner.ui.settings
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.find_sport_partner.find_sport_partner.databinding.FragmentSettingsBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class SettingsFragment : Fragment() {
@@ -30,11 +29,10 @@ class SettingsFragment : Fragment() {
             viewModel.backClicked()
         }
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.navigation.collect {
+        lifecycleScope.launchWhenCreated {
+            viewModel.navigation.collectLatest {
                 when (it) {
                     SettingsContract.ViewInstructions.NavigateBack -> {
-                        Log.e("BACK CALL", "BACK CALL")
                         findNavController().navigateUp()
                     }
                 }

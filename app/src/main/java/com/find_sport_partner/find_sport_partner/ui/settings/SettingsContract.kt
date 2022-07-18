@@ -1,20 +1,21 @@
 package com.find_sport_partner.find_sport_partner.ui.settings
 
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsContract {
 
-    interface ViewModel: ViewState, ViewActions
+    interface ViewModel : ViewState, ViewActions
 
-    interface ViewState{
+    interface ViewState {
         val navigation: Flow<ViewInstructions>
     }
 
-    interface ViewActions{
+    interface ViewActions {
         fun backClicked()
     }
 
-    sealed class ViewInstructions{
-        object NavigateBack: ViewInstructions()
+    sealed class ViewInstructions {
+        object NavigateBack : ViewInstructions()
     }
 }

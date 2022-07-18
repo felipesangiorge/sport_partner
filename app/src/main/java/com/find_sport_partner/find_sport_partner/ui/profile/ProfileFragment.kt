@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -28,7 +29,7 @@ class ProfileFragment : Fragment() {
             viewModel.settingsClicked()
         }
 
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenCreated {
             viewModel.navigation.collectLatest {
                 when (it) {
                     ProfileContract.ViewInstructions.NavigateToSettings -> {
